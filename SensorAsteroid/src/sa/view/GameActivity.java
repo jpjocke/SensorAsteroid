@@ -25,7 +25,6 @@ import android.view.ViewGroup.LayoutParams;
 public class GameActivity extends Activity implements SensorEventListener{
 	private static final String TAG = "ballDraw";
 	private DrawPnl    drawPnl; 
-	//private Rocket mRocket;
 	private GameController gc;
 	private SensorManager mSensorManager;
 	private Sensor mGravitySensor;
@@ -33,7 +32,6 @@ public class GameActivity extends Activity implements SensorEventListener{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//setContentView(R.layout.activity_main);
 		requestWindowFeature(Window.FEATURE_NO_TITLE); 
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);  
@@ -53,7 +51,6 @@ public class GameActivity extends Activity implements SensorEventListener{
 		Point size = new Point();
 		display.getSize(size);
 		gc = new GameController(size.x, size.y);
-		//mRocket = new Rocket();
 
 		drawPnl = new DrawPnl(this); 
 		addContentView(drawPnl, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)); 
@@ -217,7 +214,6 @@ public class GameActivity extends Activity implements SensorEventListener{
 				Log.d(TAG, "drawThread started");
 				Canvas c; 
 				while (run) { 
-					//Log.d(TAG, "drawThread running");
 					c = null; 
 					try { 
 						gc.updMdl();
