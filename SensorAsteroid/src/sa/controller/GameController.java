@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import sa.model.*;
 
 public class GameController {
-	private static final int STARTING_ASTEROIDS = 2;
+	private static final int STARTING_ASTEROIDS = 0;
 	private static final long RELOAD_TIME = 250;
 	private ArrayList<Asteroid> asteroids;
 	private ArrayList<Shot> shots;
@@ -15,10 +15,10 @@ public class GameController {
 
 	private boolean crashed = false;
 
-	public GameController(int areaX, int areaY){
+	public GameController(int areaX, int areaY, SensorInterface si){
 		aX = areaX;
 		aY = areaY;
-		rocket = new Rocket(aX, aY);
+		rocket = new Rocket(aX, aY, si);
 		shots = new ArrayList<Shot>();
 		asteroids = new ArrayList<Asteroid>();
 		for(int i = 0; i < STARTING_ASTEROIDS; i++){

@@ -17,4 +17,25 @@
         android:onClick="onClick"
         android:text="@string/start" />
 
+    <RadioGroup
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <RadioButton
+            android:id="@+id/menuGravRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:onClick="onClick"
+            android:text="@string/gravSensor" />
+
+        <RadioButton
+            android:id="@+id/menuRotRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="@string/rotSensor" />
+    </RadioGroup>
+
 </LinearLayout>

@@ -1,5 +1,6 @@
 package sa.view;
 
+import sa.variables.SVar;
 import se.sa.R;
 import android.os.Bundle;
 import android.app.Activity;
@@ -8,6 +9,7 @@ import android.view.Menu;
 import android.view.View;
 
 public class MenuActivity extends Activity {
+	private int sensor = SVar.GRAVITY_SENSOR;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +27,14 @@ public class MenuActivity extends Activity {
 	public void onClick(View v){
 		if(v == findViewById(R.id.menuStartBtn)){
 			Intent in = new Intent(this, GameActivity.class);
+			in.putExtra(getString(R.string.sensor), sensor);
 			startActivity(in);
+		}
+		else if(v == findViewById(R.id.menuGravRadio)){
+			sensor = SVar.GRAVITY_SENSOR;
+		}
+		else if(v == findViewById(R.id.menuRotRadio)){
+			sensor = SVar.ROTATION_VECTOR_SENSOR;
 		}
 	}
 

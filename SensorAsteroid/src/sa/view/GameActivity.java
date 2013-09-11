@@ -1,7 +1,12 @@
 package sa.view;
 
 import sa.controller.GameController;
+import sa.model.GravitySensor;
 import sa.model.Rocket;
+import sa.model.RotationSensor;
+import sa.model.SensorInterface;
+import sa.variables.SVar;
+import se.sa.R;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
@@ -23,11 +28,17 @@ import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 
 public class GameActivity extends Activity implements SensorEventListener{
-	private static final String TAG = "ballDraw";
+	private static final String TAG = "GameActivity";
 	private DrawPnl    drawPnl; 
 	private GameController gc;
+
+	private SensorInterface si;
+	private int sensor;
 	private SensorManager mSensorManager;
 	private Sensor mGravitySensor;
+	private Sensor mRotSensor;
+	private float[] rotValues;
+	private float[] rotMatrix;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,20 +48,29 @@ public class GameActivity extends Activity implements SensorEventListener{
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);  
 
 
+		Bundle extra = getIntent().getExtras();
+
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-		if(mSensorManager.getSensorList(Sensor.TYPE_GRAVITY).size() == 0){
-			Log.d(TAG, "missing gravity sensor");
-			finish();
-		}
-		else{
+		si = null;
+		sensor = extra.getInt(getString(R.string.sensor));
+		switch(sensor){
+		case SVar.GRAVITY_SENSOR:
 			mGravitySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+			si = new GravitySensor();
+			break;
+		case SVar.ROTATION_VECTOR_SENSOR:
+			mRotSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+			si = new RotationSensor();
+			rotValues = new float[3];
+			rotMatrix = new float[16];
+			break;
 		}
 
 
 		Display display = getWindowManager().getDefaultDisplay();
 		Point size = new Point();
 		display.getSize(size);
-		gc = new GameController(size.x, size.y);
+		gc = new GameController(size.x, size.y, si);
 
 		drawPnl = new DrawPnl(this); 
 		addContentView(drawPnl, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)); 
@@ -59,7 +79,14 @@ public class GameActivity extends Activity implements SensorEventListener{
 	@Override
 	protected void onResume(){
 		super.onResume();
-		mSensorManager.registerListener(this, mGravitySensor, SensorManager.SENSOR_DELAY_NORMAL);
+		switch(sensor){
+		case SVar.GRAVITY_SENSOR:
+			mSensorManager.registerListener(this, mGravitySensor, SensorManager.SENSOR_DELAY_NORMAL);
+			break;
+		case SVar.ROTATION_VECTOR_SENSOR:
+			mSensorManager.registerListener(this, mRotSensor, SensorManager.SENSOR_DELAY_NORMAL);
+			break;
+		}
 	}
 
 	@Override
@@ -79,7 +106,13 @@ public class GameActivity extends Activity implements SensorEventListener{
 		if(event.accuracy == SensorManager.SENSOR_STATUS_UNRELIABLE)
 			return;
 		if(event.sensor.getType() == Sensor.TYPE_GRAVITY){
-			gc.getRocket().setGravityData(event.values);
+			si.setData(event.values);
+		}
+		else if(event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR){
+			SensorManager.getRotationMatrixFromVector(rotMatrix, event.values);
+			SensorManager.getOrientation(rotMatrix, rotValues);
+			si.setData(rotValues);
+			//gc.getRocket().setRotData(rotValues);
 		}
 	}
 
