@@ -9,7 +9,7 @@ import android.view.Menu;
 import android.view.View;
 
 public class MenuActivity extends Activity {
-	private int sensor = SVar.GRAVITY_SENSOR;
+	private int sensor = SVar.ROTATION_VECTOR_SENSOR;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

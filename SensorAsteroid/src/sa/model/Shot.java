@@ -2,7 +2,7 @@ package sa.model;
 
 public class Shot extends MoveAbleObject{
 	public static final float SPEED = 10f;
-	public static final float MAX_DISTANCE = 400;
+	public static final float MAX_DISTANCE = 600;
 	private float distance;
 	
 

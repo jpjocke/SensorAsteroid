@@ -13,7 +13,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.Paint.Style;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -39,6 +41,7 @@ public class GameActivity extends Activity implements SensorEventListener{
 	private Sensor mRotSensor;
 	private float[] rotValues;
 	private float[] rotMatrix;
+	private Point screenSize = new Point();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +71,8 @@ public class GameActivity extends Activity implements SensorEventListener{
 
 
 		Display display = getWindowManager().getDefaultDisplay();
-		Point size = new Point();
-		display.getSize(size);
-		gc = new GameController(size.x, size.y, si);
+		display.getSize(screenSize);
+		gc = new GameController(screenSize.x, screenSize.y, si);
 
 		drawPnl = new DrawPnl(this); 
 		addContentView(drawPnl, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)); 
@@ -131,9 +133,13 @@ public class GameActivity extends Activity implements SensorEventListener{
 
 	private class DrawPnl extends SurfaceView implements SurfaceHolder.Callback{
 		private DrawThread drawThread;
+		private Paint textSmallPnt;
+		private Paint textMedPnt;
+		private Paint textLargePnt;
 		private Paint rocketPnt;
 		private Paint shotPnt;
 		private Paint[] asteroidPnt;
+		private Path rocketShape;
 
 
 		public DrawPnl(Context context) { 
@@ -141,7 +147,20 @@ public class GameActivity extends Activity implements SensorEventListener{
 			getHolder().addCallback(this); 
 
 			rocketPnt = new Paint();
-			rocketPnt.setColor(Color.BLUE);
+			rocketPnt.setColor(Color.GREEN);
+			rocketPnt.setStyle(Style.FILL);
+			rocketShape = new Path();
+
+			textSmallPnt = new Paint();
+			textSmallPnt.setColor(Color.BLUE);
+			textSmallPnt.setTextSize(15);
+			textMedPnt = new Paint();
+			textMedPnt.setColor(Color.BLUE);
+			textMedPnt.setTextSize(50);
+			textLargePnt = new Paint();
+			textLargePnt.setColor(Color.BLUE);
+			textLargePnt.setTextSize(125);
+
 			shotPnt = new Paint();
 			shotPnt.setColor(Color.WHITE);
 			asteroidPnt = new Paint[4];
@@ -157,31 +176,49 @@ public class GameActivity extends Activity implements SensorEventListener{
 		public void doDraw(Canvas canvas) {
 			try{
 				canvas.drawColor(Color.BLACK);
-				if(gc.getCrashed())
-					canvas.drawText("CRASHED", 100, 100, rocketPnt);
-				//draw rocket
-				canvas.drawLine(gc.getRocket().getDrawPos()[0][0], gc.getRocket().getDrawPos()[0][1], gc.getRocket().getDrawPos()[1][0], gc.getRocket().getDrawPos()[1][1], rocketPnt);
-				canvas.drawLine(gc.getRocket().getDrawPos()[1][0], gc.getRocket().getDrawPos()[1][1], gc.getRocket().getDrawPos()[2][0], gc.getRocket().getDrawPos()[2][1], rocketPnt);
-				canvas.drawLine(gc.getRocket().getDrawPos()[2][0], gc.getRocket().getDrawPos()[2][1], gc.getRocket().getDrawPos()[3][0], gc.getRocket().getDrawPos()[3][1], rocketPnt);
-				canvas.drawLine(gc.getRocket().getDrawPos()[3][0], gc.getRocket().getDrawPos()[3][1], gc.getRocket().getDrawPos()[0][0], gc.getRocket().getDrawPos()[0][1], rocketPnt);
+				if(gc.getCrashed()){
+					canvas.drawText(getString(R.string.crashed), 
+							screenSize.x / 2 - textLargePnt.measureText(getString(R.string.crashed)) / 2, 
+							screenSize.y / 2 + textLargePnt.getTextSize() / 2, 
+							textLargePnt);
 
-				//asteroids
-				for(int i = 0; i < gc.getAsteroids().size(); i++){
-					canvas.drawCircle(gc.getAsteroids().get(i).getPosX(), 
-							gc.getAsteroids().get(i).getPosY(), 
-							gc.getAsteroids().get(i).getRadius(), 
-							asteroidPnt[gc.getAsteroids().get(i).getLevel() - 1]);
+					//score
+					canvas.drawText("score: " + gc.getScore(), 5, textMedPnt.getTextSize() + 5, textMedPnt);
 				}
-				//shots
-				for(int i = 0; i < gc.getShots().size(); i++){
-					canvas.drawCircle(gc.getShots().get(i).getPosX(), 
-							gc.getShots().get(i).getPosY(), 
-							gc.getShots().get(i).getRadius(), 
-							shotPnt);
+				else{
+					//draw rocket
+					setRocketShape();
+					canvas.drawPath(rocketShape, rocketPnt);
+
+					//asteroids
+					for(int i = 0; i < gc.getAsteroids().size(); i++){
+						canvas.drawCircle(gc.getAsteroids().get(i).getPosX(), 
+								gc.getAsteroids().get(i).getPosY(), 
+								gc.getAsteroids().get(i).getRadius(), 
+								asteroidPnt[gc.getAsteroids().get(i).getLevel() - 1]);
+					}
+					//shots
+					for(int i = 0; i < gc.getShots().size(); i++){
+						canvas.drawCircle(gc.getShots().get(i).getPosX(), 
+								gc.getShots().get(i).getPosY(), 
+								gc.getShots().get(i).getRadius(), 
+								shotPnt);
+					}
+					//score
+					canvas.drawText("score: " + gc.getScore(), 5, textSmallPnt.getTextSize() + 5, textSmallPnt);
 				}
+
 			}catch(NullPointerException ignore){
 
 			}
+		}
+
+		private void setRocketShape(){
+			rocketShape.reset(); // only needed when reusing this path for a new build
+			rocketShape.moveTo(gc.getRocket().getDrawPos()[0][0], gc.getRocket().getDrawPos()[0][1]);
+			rocketShape.lineTo(gc.getRocket().getDrawPos()[1][0], gc.getRocket().getDrawPos()[1][1]);
+			rocketShape.lineTo(gc.getRocket().getDrawPos()[2][0], gc.getRocket().getDrawPos()[2][1]);
+			rocketShape.lineTo(gc.getRocket().getDrawPos()[3][0], gc.getRocket().getDrawPos()[3][1]);
 		}
 
 		@Override

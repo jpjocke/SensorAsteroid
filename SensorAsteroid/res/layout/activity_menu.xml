@@ -26,7 +26,6 @@
             android:id="@+id/menuGravRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="true"
             android:onClick="onClick"
             android:text="@string/gravSensor" />
 
@@ -34,6 +33,7 @@
             android:id="@+id/menuRotRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:checked="true"
             android:onClick="onClick"
             android:text="@string/rotSensor" />
     </RadioGroup>

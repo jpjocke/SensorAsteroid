@@ -8,5 +8,6 @@
     <string name="gravSensor">Use GravitySensor</string>
     <string name="rotSensor">Use RotationVectorSensor</string>
     <string name="sensor">Sensor</string>
+    <string name="crashed">CRASHED</string>
 
 </resources>
