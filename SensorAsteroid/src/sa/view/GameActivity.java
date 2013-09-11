@@ -262,13 +262,13 @@ public class GameActivity extends Activity implements SensorEventListener{
 		private class DrawThread extends Thread{ 
 			private SurfaceHolder    surfaceHolder; 
 			private boolean    run = false; 
-			private static final long TIMESTEP = 100;
-			private long timestamp;
+			//private static final long TIMESTEP = 100;
+			//private long timestamp;
 
 			public DrawThread(SurfaceHolder surfaceHolder) { 
 				Log.d(TAG, "drawThread created");
 				this.surfaceHolder = surfaceHolder; 
-				timestamp = System.currentTimeMillis();
+				//timestamp = System.currentTimeMillis();
 			} 
 
 			public void setRunning(boolean run) { 
